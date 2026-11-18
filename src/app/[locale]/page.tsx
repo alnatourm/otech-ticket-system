@@ -3,20 +3,9 @@ import { getTranslations } from "next-intl/server";
 
 export default async function HomePage() {
   const t = await getTranslations("home");
-  const c = await getTranslations("common");
-  const n = await getTranslations("nav");
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="border-b bg-white dark:bg-gray-800">
-        <div className="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
-          <span className="text-xl font-bold">{c("brand")}</span>
-          <Link href="/" locale="ar" className="text-sm text-blue-600 hover:underline">
-            {n("switchLang")}
-          </Link>
-        </div>
-      </header>
-
       <section className="mx-auto max-w-5xl px-4 py-16 text-center">
         <h1 className="text-4xl font-bold mb-3">{t("title")}</h1>
         <p className="text-gray-600 dark:text-gray-300 mb-10">{t("subtitle")}</p>

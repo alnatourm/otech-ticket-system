@@ -1,107 +1,75 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { submitTicketAction, type FormState } from "@/app/actions/auth";
 
 const CATEGORIES = ["technical", "billing", "general", "feature"] as const;
 const PRIORITIES = ["low", "medium", "high", "urgent"] as const;
 
+const initialState: FormState = {};
+
 export default function NewTicketForm() {
   const t = useTranslations("ticket");
   const c = useTranslations("common");
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [state, action, pending] = useActionState(submitTicketAction, initialState);
+  const formRef = useRef<HTMLFormElement>(null);
+  const fields = state.fieldErrors ?? {};
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    const form = e.currentTarget;
-    const data = new FormData(form);
-
-    const supabase = createClient();
-    const { error: insertError } = await supabase.from("tickets").insert({
-      title: String(data.get("title") ?? ""),
-      description: String(data.get("description") ?? ""),
-      email: String(data.get("email") ?? ""),
-      name: String(data.get("name") ?? ""),
-      category: String(data.get("category") ?? "general"),
-      priority: String(data.get("priority") ?? "medium"),
-    });
-
-    if (insertError) {
-      setError(insertError.message);
-      setLoading(false);
-      return;
-    }
-
-    setSuccess(true);
-    setLoading(false);
-    form.reset();
-    setTimeout(() => router.push("/tickets"), 1500);
-  }
-
-  if (success) {
-    return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-6 text-green-800">
-        {t("submitSuccess")}
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (state.message) formRef.current?.reset();
+  }, [state.message]);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-red-700 text-sm">
-          {error}
-        </div>
+    <form ref={formRef} action={action} className="space-y-5">
+      {state.error && (
+        <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {state.error}
+        </p>
+      )}
+      {state.message && (
+        <p className="rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-800">
+          {state.message}
+        </p>
       )}
 
       <div>
-        <label className="block text-sm font-medium mb-1">{t("title")}</label>
+        <label htmlFor="title" className="block text-sm font-medium mb-1">
+          {t("title")}
+        </label>
         <input
+          id="title"
           name="title"
           required
           placeholder={t("titlePlaceholder")}
           className="w-full rounded-md border px-3 py-2"
         />
+        {fields.title && <p className="mt-1 text-xs text-red-600">{fields.title}</p>}
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">{t("description")}</label>
+        <label htmlFor="description" className="block text-sm font-medium mb-1">
+          {t("description")}
+        </label>
         <textarea
+          id="description"
           name="description"
           required
           rows={5}
           placeholder={t("descriptionPlaceholder")}
           className="w-full rounded-md border px-3 py-2"
         />
+        {fields.description && (
+          <p className="mt-1 text-xs text-red-600">{fields.description}</p>
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="block text-sm font-medium mb-1">{t("name")}</label>
-          <input name="name" className="w-full rounded-md border px-3 py-2" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">{t("email")}</label>
-          <input
-            name="email"
-            type="email"
-            required
-            className="w-full rounded-md border px-3 py-2"
-          />
-        </div>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className="block text-sm font-medium mb-1">{t("category")}</label>
-          <select name="category" className="w-full rounded-md border px-3 py-2">
+          <label htmlFor="category" className="block text-sm font-medium mb-1">
+            {t("category")}
+          </label>
+          <select id="category" name="category" className="w-full rounded-md border px-3 py-2">
             {CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>
                 {t(`categoryOptions.${cat}`)}
@@ -110,8 +78,10 @@ export default function NewTicketForm() {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">{t("priority")}</label>
-          <select name="priority" className="w-full rounded-md border px-3 py-2">
+          <label htmlFor="priority" className="block text-sm font-medium mb-1">
+            {t("priority")}
+          </label>
+          <select id="priority" name="priority" className="w-full rounded-md border px-3 py-2">
             {PRIORITIES.map((p) => (
               <option key={p} value={p}>
                 {t(`priorityOptions.${p}`)}
@@ -123,10 +93,10 @@ export default function NewTicketForm() {
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={pending}
         className="rounded-md bg-blue-600 px-5 py-2 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
       >
-        {loading ? c("loading") : c("submit")}
+        {pending ? c("loading") : c("submit")}
       </button>
     </form>
   );

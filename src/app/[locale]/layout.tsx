@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
 import { Cairo, Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import SiteHeader from "@/components/SiteHeader";
 import "../globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -44,6 +44,7 @@ export default async function LocaleLayout({
     <html lang={locale} dir={dir}>
       <body className={`${fontClass} antialiased`}>
         <NextIntlClientProvider messages={messages}>
+          <SiteHeader />
           {children}
         </NextIntlClientProvider>
       </body>
