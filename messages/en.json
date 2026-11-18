@@ -1,0 +1,78 @@
+{
+  "common": {
+    "brand": "OTECH Support",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading...",
+    "back": "Back",
+    "status": "Status",
+    "priority": "Priority",
+    "category": "Category",
+    "created": "Created",
+    "updated": "Updated"
+  },
+  "nav": {
+    "home": "Home",
+    "newTicket": "New Ticket",
+    "myTickets": "My Tickets",
+    "agentDashboard": "Agent Dashboard",
+    "switchLang": "العربية"
+  },
+  "home": {
+    "title": "OTECH Support Portal",
+    "subtitle": "How can we help you today?",
+    "submitTicket": "Submit a Ticket",
+    "submitTicketDesc": "Report an issue or request help",
+    "trackTicket": "Track My Tickets",
+    "trackTicketDesc": "View status and replies",
+    "knowledgeBase": "Knowledge Base",
+    "knowledgeBaseDesc": "Find answers yourself"
+  },
+  "ticket": {
+    "title": "Title",
+    "titlePlaceholder": "Brief summary of your issue",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe your issue in detail",
+    "email": "Email",
+    "name": "Name",
+    "categoryOptions": {
+      "technical": "Technical",
+      "billing": "Billing",
+      "general": "General",
+      "feature": "Feature Request"
+    },
+    "priorityOptions": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "statusOptions": {
+      "open": "Open",
+      "in_progress": "In Progress",
+      "waiting": "Waiting on Customer",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "submitSuccess": "Ticket submitted successfully! We'll get back to you soon.",
+    "replyPlaceholder": "Type your reply...",
+    "sendReply": "Send Reply",
+    "noTickets": "No tickets yet.",
+    "ticketId": "Ticket ID"
+  },
+  "agent": {
+    "title": "Agent Dashboard",
+    "inbox": "Inbox",
+    "allTickets": "All Tickets",
+    "assignToMe": "Assign to Me",
+    "changeStatus": "Change Status",
+    "internalNote": "Internal note (not visible to customer)",
+    "addNote": "Add Note",
+    "stats": {
+      "open": "Open",
+      "inProgress": "In Progress",
+      "resolved": "Resolved"
+    }
+  }
+}

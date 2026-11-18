@@ -1,0 +1,78 @@
+{
+  "common": {
+    "brand": "دعم OTECH",
+    "submit": "إرسال",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "loading": "جارٍ التحميل...",
+    "back": "رجوع",
+    "status": "الحالة",
+    "priority": "الأولوية",
+    "category": "التصنيف",
+    "created": "تاريخ الإنشاء",
+    "updated": "آخر تحديث"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "newTicket": "تذكرة جديدة",
+    "myTickets": "تذاكري",
+    "agentDashboard": "لوحة الوكيل",
+    "switchLang": "English"
+  },
+  "home": {
+    "title": "بوابة دعم OTECH",
+    "subtitle": "كيف يمكننا مساعدتك اليوم؟",
+    "submitTicket": "إرسال تذكرة",
+    "submitTicketDesc": "الإبلاغ عن مشكلة أو طلب مساعدة",
+    "trackTicket": "تتبع تذاكري",
+    "trackTicketDesc": "عرض الحالة والردود",
+    "knowledgeBase": "قاعدة المعرفة",
+    "knowledgeBaseDesc": "ابحث عن إجابات بنفسك"
+  },
+  "ticket": {
+    "title": "العنوان",
+    "titlePlaceholder": "ملخص مختصر لمشكلتك",
+    "description": "الوصف",
+    "descriptionPlaceholder": "صف مشكلتك بالتفصيل",
+    "email": "البريد الإلكتروني",
+    "name": "الاسم",
+    "categoryOptions": {
+      "technical": "تقني",
+      "billing": "فوترة",
+      "general": "عام",
+      "feature": "طلب ميزة"
+    },
+    "priorityOptions": {
+      "low": "منخفض",
+      "medium": "متوسط",
+      "high": "عالٍ",
+      "urgent": "عاجل"
+    },
+    "statusOptions": {
+      "open": "مفتوحة",
+      "in_progress": "قيد المعالجة",
+      "waiting": "بانتظار العميل",
+      "resolved": "تم الحل",
+      "closed": "مغلقة"
+    },
+    "submitSuccess": "تم إرسال التذكرة بنجاح! سنرد عليك قريباً.",
+    "replyPlaceholder": "اكتب ردك...",
+    "sendReply": "إرسال الرد",
+    "noTickets": "لا توجد تذاكر بعد.",
+    "ticketId": "رقم التذكرة"
+  },
+  "agent": {
+    "title": "لوحة الوكيل",
+    "inbox": "الوارد",
+    "allTickets": "جميع التذاكر",
+    "assignToMe": "تعيين لي",
+    "changeStatus": "تغيير الحالة",
+    "internalNote": "ملاحظة داخلية (غير مرئية للعميل)",
+    "addNote": "إضافة ملاحظة",
+    "stats": {
+      "open": "مفتوحة",
+      "inProgress": "قيد المعالجة",
+      "resolved": "تم الحل"
+    }
+  }
+}
