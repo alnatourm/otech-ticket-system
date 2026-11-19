@@ -24,6 +24,7 @@ export async function generateMetadata({
   return {
     title: t("brand"),
     description: "OTECH customer support portal",
+    icons: { icon: "/logo.jpg", apple: "/logo.jpg" },
   };
 }
 

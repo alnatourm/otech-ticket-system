@@ -1,13 +1,13 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   Bell,
   Globe,
   LayoutDashboard,
-  LifeBuoy,
   LogOut,
   Search,
   Settings2,
@@ -60,9 +60,14 @@ export default function AppShell({ user, locale, children }: Props) {
       <div className="mx-auto flex w-full max-w-[1600px] gap-5">
         <aside className="glass-side sticky top-6 hidden h-[calc(100vh-3rem)] w-60 shrink-0 flex-col p-4 lg:flex">
           <Link href="/" className="mb-8 flex items-center gap-3 px-2 pt-2">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-400/30">
-              <LifeBuoy size={20} />
-            </span>
+            <Image
+              src="/logo.jpg"
+              alt="OTECH"
+              width={44}
+              height={44}
+              className="h-11 w-11 rounded-full object-cover shadow-md shadow-indigo-300/50"
+              priority
+            />
             <span className="leading-tight">
               <span className="block text-sm font-bold text-slate-800">OTECH</span>
               <span className="block text-[11px] font-medium tracking-wide text-indigo-500">
@@ -135,8 +140,8 @@ export default function AppShell({ user, locale, children }: Props) {
         <div className="min-w-0 flex-1">
           <header className="glass mb-5 flex flex-wrap items-center justify-between gap-3 px-4 py-3.5 sm:px-6">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 lg:hidden">
-                <LifeBuoy size={18} />
+              <span className="lg:hidden">
+                <Image src="/logo.jpg" alt="OTECH" width={36} height={36} className="h-9 w-9 rounded-full object-cover" />
               </span>
               <div>
                 <p className="text-[11px] font-medium uppercase tracking-wider text-indigo-500">

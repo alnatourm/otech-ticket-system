@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import {
@@ -65,9 +66,14 @@ export default async function HomePage() {
           <section className="glass relative overflow-hidden px-6 py-12 text-center sm:px-12 sm:py-16">
             <div className="pointer-events-none absolute -start-20 -top-24 h-64 w-64 rounded-full bg-indigo-300/30 blur-3xl" />
             <div className="pointer-events-none absolute -end-16 bottom-0 h-64 w-64 rounded-full bg-sky-300/30 blur-3xl" />
-            <span className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-xl shadow-indigo-400/30">
-              <LifeBuoy size={26} />
-            </span>
+            <Image
+              src="/logo.jpg"
+              alt="OTECH"
+              width={64}
+              height={64}
+              className="mx-auto mb-5 h-16 w-16 rounded-full object-cover shadow-xl shadow-indigo-300/50"
+              priority
+            />
             <h1 className="gradient-text text-3xl font-bold tracking-tight sm:text-4xl">
               {d("heroTitle")}
             </h1>
