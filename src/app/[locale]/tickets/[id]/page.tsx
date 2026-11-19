@@ -29,12 +29,38 @@ export default async function TicketDetailPage({
     ascending: true,
   });
 
+  const { data: attachments } = await supabase
+    .from("ticket_attachments")
+    .select("id,reply_id,file_path,file_name,content_type,created_at")
+    .eq("ticket_id", id);
+
+  let signedUrls: Array<{ path: string; signedUrl: string }> = [];
+  if (attachments && attachments.length > 0) {
+    const { data } = await supabase.storage
+      .from("ticket-attachments")
+      .createSignedUrls(
+        attachments.map((a) => a.file_path),
+        60 * 60
+      );
+    signedUrls = (data ?? [])
+      .filter((item) => item.signedUrl)
+      .map((item) => ({ path: item.path ?? "", signedUrl: item.signedUrl! }));
+  }
+
+  const ticketAttachments = (attachments ?? []).map((a) => ({
+    ...a,
+    url: signedUrls.find((s) => s.path === a.file_path)?.signedUrl ?? "",
+  }));
+
   return (
     <TicketDetail
       ticket={ticket}
       replies={replies ?? []}
+      attachments={ticketAttachments}
       authorName={user.fullName}
       authorEmail={user.email}
+      userId={user.id}
+      companyId={user.companyId}
       isAgent={isAgent}
     />
   );

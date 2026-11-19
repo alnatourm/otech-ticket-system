@@ -104,6 +104,11 @@
       "closed": "Closed"
     },
     "submitSuccess": "Ticket submitted successfully! We'll get back to you soon.",
+    "attachImages": "Attach images (max 5 MB each)",
+    "attachments": "Attachments",
+    "uploadError": "Could not upload the image. Please try again.",
+    "fileTooLarge": "Images must be smaller than 5 MB.",
+    "imageOnlyReply": "Sent an image",
     "titleError": "Enter a title of at least 3 characters.",
     "descriptionError": "Describe your issue in at least 10 characters.",
     "fixFields": "Please correct the highlighted fields.",

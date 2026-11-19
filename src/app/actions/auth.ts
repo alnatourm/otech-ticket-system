@@ -109,19 +109,65 @@ export async function submitTicketAction(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.from("tickets").insert({
-    title,
-    description,
-    category,
-    priority,
-    email: user.email,
-    name: user.fullName,
-    company_id: user.companyId,
-    created_by: user.id,
-  });
+  const { data: created, error } = await supabase
+    .from("tickets")
+    .insert({
+      title,
+      description,
+      category,
+      priority,
+      email: user.email,
+      name: user.fullName,
+      company_id: user.companyId,
+      created_by: user.id,
+    })
+    .select("id")
+    .single();
 
-  if (error) {
-    return { error: error.message };
+  if (error || !created) {
+    return { error: error?.message ?? t("uploadError") };
+  }
+
+  const isAgent = user.role === "agent" || user.role === "admin";
+  const rawAttachments = String(formData.get("attachments") ?? "[]");
+  let attachments: Array<{
+    path: string;
+    file_name: string;
+    content_type: string;
+    size_bytes: number;
+  }> = [];
+  try {
+    const parsed: unknown = JSON.parse(rawAttachments);
+    if (Array.isArray(parsed)) attachments = parsed as typeof attachments;
+  } catch {
+    return { error: t("uploadError") };
+  }
+
+  const ownFolder = isAgent ? "agents" : user.companyId;
+  const valid = attachments.filter(
+    (a) =>
+      typeof a.path === "string" &&
+      typeof a.file_name === "string" &&
+      /^(agents|[0-9a-f-]{36})\/[0-9a-f-]{8,}\.[a-zA-Z0-9]+$/.test(a.path) &&
+      (isAgent || a.path.startsWith(`${ownFolder}/`))
+  );
+
+  if (valid.length > 0) {
+    const { error: attachmentError } = await supabase
+      .from("ticket_attachments")
+      .insert(
+        valid.map((a) => ({
+          ticket_id: created.id,
+          file_path: a.path,
+          file_name: a.file_name,
+          content_type: a.content_type,
+          size_bytes: a.size_bytes,
+          uploaded_by: user.id,
+        }))
+      );
+    if (attachmentError) {
+      return { error: attachmentError.message };
+    }
   }
 
   return { message: t("submitSuccess") };

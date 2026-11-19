@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, ImagePlus, Send, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { uploadImages, type UploadedFile } from "@/lib/uploads";
 
 type Reply = {
   id: string;
@@ -29,11 +31,23 @@ type Ticket = {
   updated_at: string;
 };
 
+type Attachment = {
+  id: string;
+  reply_id: string | null;
+  file_path: string;
+  file_name: string;
+  content_type: string;
+  url: string;
+};
+
 type Props = {
   ticket: Ticket;
   replies: Reply[];
+  attachments: Attachment[];
   authorName: string | null;
   authorEmail: string;
+  userId: string;
+  companyId: string | null;
   isAgent: boolean;
 };
 
@@ -47,11 +61,46 @@ const PILL: Record<string, string> = {
 
 const STATUSES = ["open", "in_progress", "waiting", "resolved", "closed"] as const;
 
+function AttachmentGrid({ items, label }: { items: Attachment[]; label: string }) {
+  if (items.length === 0) return null;
+  return (
+    <div className="mt-3 flex flex-wrap gap-2">
+      {items.map((item) =>
+        item.content_type.startsWith("image/") && item.url ? (
+          <a key={item.id} href={item.url} target="_blank" rel="noreferrer" title={item.file_name}>
+            <Image
+              src={item.url}
+              alt={`${label}: ${item.file_name}`}
+              width={140}
+              height={140}
+              unoptimized
+              className="h-28 w-28 rounded-xl border border-white/80 object-cover shadow-sm"
+            />
+          </a>
+        ) : (
+          <a
+            key={item.id}
+            href={item.url || "#"}
+            target="_blank"
+            rel="noreferrer"
+            className="pill pill-open text-xs"
+          >
+            {item.file_name}
+          </a>
+        )
+      )}
+    </div>
+  );
+}
+
 export default function TicketDetail({
   ticket,
   replies,
+  attachments,
   authorName,
   authorEmail,
+  userId,
+  companyId,
   isAgent,
 }: Props) {
   const t = useTranslations("ticket");
@@ -62,6 +111,29 @@ export default function TicketDetail({
   const [internal, setInternal] = useState(false);
   const [sending, setSending] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [files, setFiles] = useState<UploadedFile[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const selected = Array.from(e.target.files ?? []);
+    if (selected.length === 0) return;
+    setUploading(true);
+    setUploadError(null);
+    try {
+      const uploaded = await uploadImages(selected, companyId, isAgent);
+      setFiles((prev) => [...prev, ...uploaded]);
+    } catch (err) {
+      setUploadError(
+        err instanceof Error && err.message === "FILE_TOO_LARGE"
+          ? t("fileTooLarge")
+          : t("uploadError")
+      );
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  }
 
   async function changeStatus(status: string) {
     setUpdatingStatus(true);
@@ -76,19 +148,42 @@ export default function TicketDetail({
 
   async function sendReply(e: React.FormEvent) {
     e.preventDefault();
-    if (!reply.trim()) return;
+    if (!reply.trim() && files.length === 0) return;
     setSending(true);
     const supabase = createClient();
-    const { error } = await supabase.from("ticket_replies").insert({
-      ticket_id: ticket.id,
-      body: reply,
-      is_agent: isAgent,
-      is_internal: isAgent && internal,
-      author_name: authorName,
-      author_email: authorEmail,
-    });
+    const { data: createdReply, error } = await supabase
+      .from("ticket_replies")
+      .insert({
+        ticket_id: ticket.id,
+        body: reply.trim() || t("imageOnlyReply"),
+        is_agent: isAgent,
+        is_internal: isAgent && internal,
+        author_name: authorName,
+        author_email: authorEmail,
+      })
+      .select("id")
+      .single();
+
+    if (!error && createdReply && files.length > 0) {
+      const { error: filesError } = await supabase
+        .from("ticket_attachments")
+        .insert(
+          files.map((file) => ({
+            ticket_id: ticket.id,
+            reply_id: createdReply.id,
+            file_path: file.path,
+            file_name: file.file_name,
+            content_type: file.content_type,
+            size_bytes: file.size_bytes,
+            uploaded_by: userId,
+          }))
+        );
+      if (filesError) setUploadError(filesError.message);
+    }
+
     if (!error) {
       setReply("");
+      setFiles([]);
       router.refresh();
     }
     setSending(false);
@@ -137,6 +232,7 @@ export default function TicketDetail({
           <span>{c("created")}: <b className="text-slate-700">{new Date(ticket.created_at).toLocaleString()}</b></span>
           <span>{c("updated")}: <b className="text-slate-700">{new Date(ticket.updated_at).toLocaleString()}</b></span>
         </div>
+        <AttachmentGrid items={attachments.filter((a) => !a.reply_id)} label={t("attachments")} />
       </section>
 
       <section className="glass p-5 sm:p-6">
@@ -158,6 +254,10 @@ export default function TicketDetail({
                   )}
                 </div>
                 <p className="whitespace-pre-wrap text-sm text-slate-700">{r.body}</p>
+                <AttachmentGrid
+                  items={attachments.filter((a) => a.reply_id === r.id)}
+                  label={t("attachments")}
+                />
               </div>
             ))}
           </div>
@@ -170,6 +270,39 @@ export default function TicketDetail({
             placeholder={t("replyPlaceholder")}
             className="input"
           />
+          {uploadError && <p className="text-xs text-rose-600">{uploadError}</p>}
+          <label className="flex items-center gap-2 text-xs font-medium text-slate-600">
+            <ImagePlus size={15} className="text-indigo-500" />
+            {t("attachImages")}
+          </label>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            multiple
+            onChange={handleFiles}
+            disabled={uploading}
+            className="block w-full text-xs file:me-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-3 file:py-2 file:text-indigo-700"
+          />
+          {uploading && <p className="muted text-xs">{c("loading")}</p>}
+          {files.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {files.map((file) => (
+                <span
+                  key={file.path}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-2.5 py-1 text-xs text-indigo-700"
+                >
+                  {file.file_name}
+                  <button
+                    type="button"
+                    onClick={() => setFiles((prev) => prev.filter((f) => f.path !== file.path))}
+                    aria-label={c("cancel")}
+                  >
+                    <X size={12} />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
           {isAgent && (
             <label className="flex items-center gap-2 text-sm text-slate-600">
               <input
@@ -181,8 +314,8 @@ export default function TicketDetail({
               {t("internalNote")}
             </label>
           )}
-          <button type="submit" disabled={sending} className="btn-primary">
-            <Send size={15} /> {sending ? c("loading") : t("sendReply")}
+          <button type="submit" disabled={sending || uploading} className="btn-primary">
+            <Send size={15} /> {sending || uploading ? c("loading") : t("sendReply")}
           </button>
         </form>
       </section>

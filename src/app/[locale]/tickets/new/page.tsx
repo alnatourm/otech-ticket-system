@@ -23,7 +23,10 @@ export default async function NewTicketPage() {
       </section>
 
       <section className="glass p-5 sm:p-6">
-        <NewTicketForm />
+        <NewTicketForm
+          companyId={user.companyId}
+          isAgent={user.role === "agent" || user.role === "admin"}
+        />
       </section>
     </main>
   );
