@@ -45,6 +45,8 @@ const PILL: Record<string, string> = {
   closed: "pill-closed",
 };
 
+const STATUSES = ["open", "in_progress", "waiting", "resolved", "closed"] as const;
+
 export default function TicketDetail({
   ticket,
   replies,
@@ -54,10 +56,23 @@ export default function TicketDetail({
 }: Props) {
   const t = useTranslations("ticket");
   const c = useTranslations("common");
+  const a = useTranslations("agent");
   const router = useRouter();
   const [reply, setReply] = useState("");
   const [internal, setInternal] = useState(false);
   const [sending, setSending] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+
+  async function changeStatus(status: string) {
+    setUpdatingStatus(true);
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("tickets")
+      .update({ status })
+      .eq("id", ticket.id);
+    if (!error) router.refresh();
+    setUpdatingStatus(false);
+  }
 
   async function sendReply(e: React.FormEvent) {
     e.preventDefault();
@@ -86,11 +101,31 @@ export default function TicketDetail({
       </Link>
 
       <section className="glass p-5 sm:p-6">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <h1 className="text-xl font-bold text-slate-800">{ticket.title}</h1>
-          <span className={`pill ${PILL[ticket.status] ?? ""}`}>
-            {t(`statusOptions.${ticket.status}`)}
-          </span>
+          {isAgent ? (
+            <div className="min-w-40">
+              <label className="mb-1 block text-[11px] font-medium text-slate-500">
+                {a("changeStatus")}
+              </label>
+              <select
+                value={ticket.status}
+                onChange={(e) => changeStatus(e.target.value)}
+                disabled={updatingStatus}
+                className={`input py-1.5 text-xs ${PILL[ticket.status] ?? ""}`}
+              >
+                {STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {t(`statusOptions.${s}`)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <span className={`pill ${PILL[ticket.status] ?? ""}`}>
+              {t(`statusOptions.${ticket.status}`)}
+            </span>
+          )}
         </div>
         <p className="muted mt-1 text-xs">
           {t("ticketId")}: {ticket.id}
