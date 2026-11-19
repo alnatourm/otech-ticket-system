@@ -15,7 +15,7 @@ export default function LoginForm() {
   return (
     <form action={action} className="space-y-5">
       {state.error && (
-        <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <p className="rounded-xl border border-rose-200 bg-rose-50/80 p-3 text-sm text-rose-700">
           {state.error}
         </p>
       )}
@@ -30,7 +30,7 @@ export default function LoginForm() {
           type="email"
           autoComplete="email"
           required
-          className="w-full rounded-md border px-3 py-2"
+          className="input"
         />
       </div>
 
@@ -44,14 +44,14 @@ export default function LoginForm() {
           type="password"
           autoComplete="current-password"
           required
-          className="w-full rounded-md border px-3 py-2"
+          className="input"
         />
       </div>
 
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-md bg-blue-600 px-5 py-2 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
+        className="btn-primary w-full"
       >
         {pending ? c("loading") : t("signIn")}
       </button>

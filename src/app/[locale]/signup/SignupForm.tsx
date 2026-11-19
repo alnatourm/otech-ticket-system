@@ -17,12 +17,12 @@ export default function SignupForm() {
   return (
     <form action={action} className="space-y-4">
       {state.error && (
-        <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <p className="rounded-xl border border-rose-200 bg-rose-50/80 p-3 text-sm text-rose-700">
           {state.error}
         </p>
       )}
       {state.message && (
-        <p className="rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-800">
+        <p className="rounded-xl border border-emerald-200 bg-emerald-50/80 p-3 text-sm text-emerald-800">
           {state.message}
         </p>
       )}
@@ -35,10 +35,10 @@ export default function SignupForm() {
           id="companyName"
           name="companyName"
           required
-          className="w-full rounded-md border px-3 py-2"
+          className="input"
         />
         {fields.companyName && (
-          <p className="mt-1 text-xs text-red-600">{fields.companyName}</p>
+          <p className="mt-1 text-xs text-rose-600">{fields.companyName}</p>
         )}
       </div>
 
@@ -50,10 +50,10 @@ export default function SignupForm() {
           id="fullName"
           name="fullName"
           required
-          className="w-full rounded-md border px-3 py-2"
+          className="input"
         />
         {fields.fullName && (
-          <p className="mt-1 text-xs text-red-600">{fields.fullName}</p>
+          <p className="mt-1 text-xs text-rose-600">{fields.fullName}</p>
         )}
       </div>
 
@@ -67,9 +67,9 @@ export default function SignupForm() {
           type="email"
           autoComplete="email"
           required
-          className="w-full rounded-md border px-3 py-2"
+          className="input"
         />
-        {fields.email && <p className="mt-1 text-xs text-red-600">{fields.email}</p>}
+        {fields.email && <p className="mt-1 text-xs text-rose-600">{fields.email}</p>}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -83,7 +83,7 @@ export default function SignupForm() {
             type="password"
             autoComplete="new-password"
             required
-            className="w-full rounded-md border px-3 py-2"
+            className="input"
           />
         </div>
         <div>
@@ -96,16 +96,16 @@ export default function SignupForm() {
             type="password"
             autoComplete="new-password"
             required
-            className="w-full rounded-md border px-3 py-2"
+            className="input"
           />
         </div>
       </div>
-      {fields.password && <p className="text-xs text-red-600">{fields.password}</p>}
+      {fields.password && <p className="text-xs text-rose-600">{fields.password}</p>}
 
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-md bg-blue-600 px-5 py-2 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
+        className="btn-primary w-full"
       >
         {pending ? c("loading") : t("createAccount")}
       </button>

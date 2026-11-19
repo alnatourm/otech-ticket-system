@@ -54,6 +54,28 @@
     "passwordMismatch": "كلمتا المرور غير متطابقتين.",
     "checkEmail": "تم إنشاء الحساب. يرجى التحقق من بريدك الإلكتروني لتأكيد عنوانك قبل تسجيل الدخول."
   },
+  "dashboard": {
+    "workspace": "مساحة الدعم",
+    "welcome": "مرحباً بعودتك",
+    "yourWorkspace": "مساحتي",
+    "searchPlaceholder": "ابحث في التذاكر...",
+    "subtitle": "إليك آخر ما يخص طلبات الدعم الخاصة بك.",
+    "openTickets": "تذاكر مفتوحة",
+    "inProgress": "قيد المعالجة",
+    "resolved": "تم الحل",
+    "totalTickets": "إجمالي التذاكر",
+    "recentTickets": "أحدث التذاكر",
+    "quickActions": "إجراءات سريعة",
+    "statusBreakdown": "حالة التذاكر",
+    "viewAll": "عرض الكل",
+    "noTickets": "لا توجد تذاكر بعد. أرسل أول تذكرة للبدء.",
+    "submitFirst": "إرسال تذكرة",
+    "heroTitle": "دعم يدفع أعمالك إلى الأمام",
+    "heroSubtitle": "أرسل التذاكر وتابع تقدمها وتواصل مع فريق OTECH — بالعربية أو الإنجليزية.",
+    "getStarted": "ابدأ الآن",
+    "companyLabel": "الشركة",
+    "signedInAs": "مسجل الدخول كـ"
+  },
   "ticket": {
     "title": "العنوان",
     "newTicketTitle": "إرسال تذكرة جديدة",

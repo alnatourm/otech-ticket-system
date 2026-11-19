@@ -54,6 +54,28 @@
     "passwordMismatch": "Passwords do not match.",
     "checkEmail": "Account created. Please check your email to confirm your address before signing in."
   },
+  "dashboard": {
+    "workspace": "Support workspace",
+    "welcome": "Welcome back",
+    "yourWorkspace": "My workspace",
+    "searchPlaceholder": "Search tickets...",
+    "subtitle": "Here's what's happening with your support requests.",
+    "openTickets": "Open tickets",
+    "inProgress": "In progress",
+    "resolved": "Resolved",
+    "totalTickets": "Total tickets",
+    "recentTickets": "Recent tickets",
+    "quickActions": "Quick actions",
+    "statusBreakdown": "Ticket status",
+    "viewAll": "View all",
+    "noTickets": "No tickets yet. Submit your first one to get started.",
+    "submitFirst": "Submit a ticket",
+    "heroTitle": "Support that moves your business forward",
+    "heroSubtitle": "Submit tickets, follow their progress, and talk to the OTECH team — in English or Arabic.",
+    "getStarted": "Get started",
+    "companyLabel": "Company",
+    "signedInAs": "Signed in as"
+  },
   "ticket": {
     "title": "Title",
     "newTicketTitle": "Submit a new ticket",

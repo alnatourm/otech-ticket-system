@@ -23,12 +23,12 @@ export default function NewTicketForm() {
   return (
     <form ref={formRef} action={action} className="space-y-5">
       {state.error && (
-        <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <p className="rounded-xl border border-rose-200 bg-rose-50/80 p-3 text-sm text-rose-700">
           {state.error}
         </p>
       )}
       {state.message && (
-        <p className="rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-800">
+        <p className="rounded-xl border border-emerald-200 bg-emerald-50/80 p-3 text-sm text-emerald-800">
           {state.message}
         </p>
       )}
@@ -42,9 +42,9 @@ export default function NewTicketForm() {
           name="title"
           required
           placeholder={t("titlePlaceholder")}
-          className="w-full rounded-md border px-3 py-2"
+          className="input"
         />
-        {fields.title && <p className="mt-1 text-xs text-red-600">{fields.title}</p>}
+        {fields.title && <p className="mt-1 text-xs text-rose-600">{fields.title}</p>}
       </div>
 
       <div>
@@ -57,10 +57,10 @@ export default function NewTicketForm() {
           required
           rows={5}
           placeholder={t("descriptionPlaceholder")}
-          className="w-full rounded-md border px-3 py-2"
+          className="input"
         />
         {fields.description && (
-          <p className="mt-1 text-xs text-red-600">{fields.description}</p>
+          <p className="mt-1 text-xs text-rose-600">{fields.description}</p>
         )}
       </div>
 
@@ -69,7 +69,7 @@ export default function NewTicketForm() {
           <label htmlFor="category" className="block text-sm font-medium mb-1">
             {t("category")}
           </label>
-          <select id="category" name="category" className="w-full rounded-md border px-3 py-2">
+          <select id="category" name="category" className="input">
             {CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>
                 {t(`categoryOptions.${cat}`)}
@@ -81,7 +81,7 @@ export default function NewTicketForm() {
           <label htmlFor="priority" className="block text-sm font-medium mb-1">
             {t("priority")}
           </label>
-          <select id="priority" name="priority" className="w-full rounded-md border px-3 py-2">
+          <select id="priority" name="priority" className="input">
             {PRIORITIES.map((p) => (
               <option key={p} value={p}>
                 {t(`priorityOptions.${p}`)}
@@ -94,7 +94,7 @@ export default function NewTicketForm() {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-blue-600 px-5 py-2 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
+        className="btn-primary"
       >
         {pending ? c("loading") : c("submit")}
       </button>

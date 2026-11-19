@@ -1,9 +1,10 @@
 import { Cairo, Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import SiteHeader from "@/components/SiteHeader";
+import AppShell from "@/components/AppShell";
+import { getCurrentUser } from "@/lib/auth";
 import "../globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -37,6 +38,8 @@ export default async function LocaleLayout({
   if (!routing.locales.includes(locale as "en" | "ar")) notFound();
 
   const messages = await getMessages();
+  const activeLocale = await getLocale();
+  const user = await getCurrentUser();
   const dir = locale === "ar" ? "rtl" : "ltr";
   const fontClass = locale === "ar" ? cairo.variable : inter.variable;
 
@@ -44,8 +47,21 @@ export default async function LocaleLayout({
     <html lang={locale} dir={dir}>
       <body className={`${fontClass} antialiased`}>
         <NextIntlClientProvider messages={messages}>
-          <SiteHeader />
-          {children}
+          <AppShell
+            locale={activeLocale}
+            user={
+              user
+                ? {
+                    name: user.fullName,
+                    email: user.email,
+                    company: user.companyName,
+                    role: user.role,
+                  }
+                : null
+            }
+          >
+            {children}
+          </AppShell>
         </NextIntlClientProvider>
       </body>
     </html>

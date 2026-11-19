@@ -30,16 +30,12 @@ export default async function TicketDetailPage({
   });
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="mx-auto max-w-3xl px-4 py-12">
-        <TicketDetail
-          ticket={ticket}
-          replies={replies ?? []}
-          authorName={user.fullName}
-          authorEmail={user.email}
-          isAgent={isAgent}
-        />
-      </div>
-    </main>
+    <TicketDetail
+      ticket={ticket}
+      replies={replies ?? []}
+      authorName={user.fullName}
+      authorEmail={user.email}
+      isAgent={isAgent}
+    />
   );
 }

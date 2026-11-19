@@ -1,9 +1,10 @@
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
+import { Ticket, TicketPlus } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
-type Ticket = {
+type TicketRow = {
   id: string;
   title: string;
   status: string;
@@ -12,10 +13,18 @@ type Ticket = {
   created_at: string;
 };
 
+const PILL: Record<string, string> = {
+  open: "pill-open",
+  in_progress: "pill-progress",
+  waiting: "pill-waiting",
+  resolved: "pill-resolved",
+  closed: "pill-closed",
+};
+
 export default async function MyTicketsPage() {
   const t = await getTranslations("ticket");
+  const d = await getTranslations("dashboard");
   const n = await getTranslations("nav");
-  const c = await getTranslations("common");
   const user = await requireUser();
 
   const supabase = await createClient();
@@ -24,54 +33,58 @@ export default async function MyTicketsPage() {
     .select("id,title,status,priority,category,created_at")
     .order("created_at", { ascending: false });
 
-  const tickets = (data ?? []) as Ticket[];
+  const tickets = (data ?? []) as TicketRow[];
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="mx-auto max-w-3xl px-4 py-12">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold">{n("myTickets")}</h1>
-            {user.companyName && (
-              <p className="text-sm text-gray-500">{user.companyName}</p>
-            )}
-          </div>
-          <Link
-            href="/tickets/new"
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white"
-          >
-            {n("newTicket")}
-          </Link>
+    <main className="space-y-5 pb-8">
+      <section className="glass flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+        <div>
+          <h1 className="section-title flex items-center gap-2 text-lg">
+            <Ticket size={19} className="text-indigo-500" /> {n("myTickets")}
+          </h1>
+          <p className="muted mt-1 text-xs">
+            {user.companyName ? `${d("companyLabel")}: ${user.companyName}` : user.email}
+          </p>
         </div>
+        <Link href="/tickets/new" className="btn-primary">
+          <TicketPlus size={16} /> {n("newTicket")}
+        </Link>
+      </section>
 
+      <section className="glass p-5">
         {tickets.length === 0 ? (
-          <p className="text-gray-500">{t("noTickets")}</p>
+          <div className="rounded-2xl border border-dashed border-indigo-200 bg-white/50 px-5 py-12 text-center">
+            <Ticket size={30} className="mx-auto mb-3 text-indigo-400" />
+            <p className="muted mb-4">{t("noTickets")}</p>
+            <Link href="/tickets/new" className="btn-primary">
+              {d("submitFirst")}
+            </Link>
+          </div>
         ) : (
-          <ul className="space-y-3">
+          <ul className="space-y-2.5">
             {tickets.map((tk) => (
               <li key={tk.id}>
                 <Link
                   href={`/tickets/${tk.id}`}
-                  className="block rounded-lg border bg-white p-4 hover:shadow-sm"
+                  className="glass-soft flex items-center justify-between gap-3 p-4 transition hover:bg-white/90"
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-medium">{tk.title}</span>
-                    <span className="rounded-full bg-gray-100 px-2 py-1 text-xs">
-                      {t(`statusOptions.${tk.status}`)}
-                    </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-slate-800">{tk.title}</p>
+                    <p className="muted mt-1 text-xs">
+                      {t(`categoryOptions.${tk.category}`)} ·{" "}
+                      {t(`priorityOptions.${tk.priority}`)} ·{" "}
+                      {new Date(tk.created_at).toLocaleDateString()}
+                    </p>
                   </div>
-                  <div className="mt-1 text-xs text-gray-500">
-                    {t(`categoryOptions.${tk.category}`)} ·{" "}
-                    {t(`priorityOptions.${tk.priority}`)} ·{" "}
-                    {new Date(tk.created_at).toLocaleDateString()}
-                  </div>
+                  <span className={`pill ${PILL[tk.status] ?? ""}`}>
+                    {t(`statusOptions.${tk.status}`)}
+                  </span>
                 </Link>
               </li>
             ))}
           </ul>
         )}
-        <p className="mt-6 text-xs text-gray-400">{c("brand")}</p>
-      </div>
+      </section>
     </main>
   );
 }
