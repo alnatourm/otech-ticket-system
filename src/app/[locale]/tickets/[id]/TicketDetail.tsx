@@ -9,6 +9,12 @@ import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { uploadImages, type UploadedFile } from "@/lib/uploads";
 
+export type Assignee = {
+  id: string;
+  fullName: string | null;
+  role: string;
+};
+
 type Reply = {
   id: string;
   body: string;
@@ -27,6 +33,7 @@ type Ticket = {
   category: string;
   email: string;
   name: string | null;
+  assigned_to?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -49,6 +56,7 @@ type Props = {
   userId: string;
   companyId: string | null;
   isAgent: boolean;
+  assignees?: Assignee[];
 };
 
 const PILL: Record<string, string> = {
@@ -102,11 +110,15 @@ export default function TicketDetail({
   userId,
   companyId,
   isAgent,
+  assignees = [],
 }: Props) {
   const t = useTranslations("ticket");
   const c = useTranslations("common");
   const a = useTranslations("agent");
   const router = useRouter();
+
+  const [currentAssignedTo, setCurrentAssignedTo] = useState<string | null>(ticket.assigned_to ?? null);
+  const [updatingAssignee, setUpdatingAssignee] = useState(false);
   const [reply, setReply] = useState("");
   const [internal, setInternal] = useState(false);
   const [sending, setSending] = useState(false);
@@ -144,6 +156,21 @@ export default function TicketDetail({
       .eq("id", ticket.id);
     if (!error) router.refresh();
     setUpdatingStatus(false);
+  }
+
+  async function changeAssignee(newAssigneeId: string) {
+    setUpdatingAssignee(true);
+    const supabase = createClient();
+    const val = newAssigneeId === "" ? null : newAssigneeId;
+    const { error } = await supabase
+      .from("tickets")
+      .update({ assigned_to: val })
+      .eq("id", ticket.id);
+    if (!error) {
+      setCurrentAssignedTo(val);
+      router.refresh();
+    }
+    setUpdatingAssignee(false);
   }
 
   async function sendReply(e: React.FormEvent) {
@@ -197,24 +224,53 @@ export default function TicketDetail({
 
       <section className="glass p-5 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <h1 className="text-xl font-bold text-slate-800">{ticket.title}</h1>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl font-bold text-slate-800">{ticket.title}</h1>
+            <p className="muted mt-1 text-xs">
+              {t("ticketId")}: {ticket.id}
+            </p>
+          </div>
+
           {isAgent ? (
-            <div className="min-w-40">
-              <label className="mb-1 block text-[11px] font-medium text-slate-500">
-                {a("changeStatus")}
-              </label>
-              <select
-                value={ticket.status}
-                onChange={(e) => changeStatus(e.target.value)}
-                disabled={updatingStatus}
-                className={`input py-1.5 text-xs ${PILL[ticket.status] ?? ""}`}
-              >
-                {STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {t(`statusOptions.${s}`)}
-                  </option>
-                ))}
-              </select>
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Assignee selector: visible only to agents, lists agents/admins + Unassigned */}
+              <div className="min-w-36">
+                <label className="mb-1 block text-[11px] font-medium text-slate-500">
+                  {a("assignee")}
+                </label>
+                <select
+                  value={currentAssignedTo ?? ""}
+                  onChange={(e) => changeAssignee(e.target.value)}
+                  disabled={updatingAssignee}
+                  className="input py-1.5 text-xs"
+                >
+                  <option value="">{a("unassigned")}</option>
+                  {assignees.map((agent) => (
+                    <option key={agent.id} value={agent.id}>
+                      {agent.fullName || agent.id}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Status selector */}
+              <div className="min-w-36">
+                <label className="mb-1 block text-[11px] font-medium text-slate-500">
+                  {a("changeStatus")}
+                </label>
+                <select
+                  value={ticket.status}
+                  onChange={(e) => changeStatus(e.target.value)}
+                  disabled={updatingStatus}
+                  className={`input py-1.5 text-xs ${PILL[ticket.status] ?? ""}`}
+                >
+                  {STATUSES.map((s) => (
+                    <option key={s} value={s}>
+                      {t(`statusOptions.${s}`)}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           ) : (
             <span className={`pill ${PILL[ticket.status] ?? ""}`}>
@@ -222,9 +278,7 @@ export default function TicketDetail({
             </span>
           )}
         </div>
-        <p className="muted mt-1 text-xs">
-          {t("ticketId")}: {ticket.id}
-        </p>
+
         <p className="mt-5 whitespace-pre-wrap leading-relaxed text-slate-700">{ticket.description}</p>
         <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/80 pt-4 text-xs text-slate-500 sm:grid-cols-4">
           <span>{c("category")}: <b className="text-slate-700">{t(`categoryOptions.${ticket.category}`)}</b></span>

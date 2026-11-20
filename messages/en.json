@@ -10,7 +10,11 @@
     "priority": "Priority",
     "category": "Category",
     "created": "Created",
-    "updated": "Updated"
+    "updated": "Updated",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {current} of {total}",
+    "all": "All"
   },
   "nav": {
     "home": "Home",
@@ -58,7 +62,7 @@
     "workspace": "Support workspace",
     "welcome": "Welcome back",
     "yourWorkspace": "My workspace",
-    "searchPlaceholder": "Search tickets...",
+    "searchPlaceholder": "Search by title or email...",
     "subtitle": "Here's what's happening with your support requests.",
     "openTickets": "Open tickets",
     "inProgress": "In progress",
@@ -121,6 +125,8 @@
     "replyPlaceholder": "Type your reply...",
     "sendReply": "Send Reply",
     "noTickets": "No tickets yet.",
+    "noMatchingTickets": "No tickets match your search or filter criteria.",
+    "allStatus": "All",
     "ticketId": "Ticket ID"
   },
   "agent": {
@@ -129,6 +135,14 @@
     "allTickets": "All Tickets",
     "assignToMe": "Assign to Me",
     "changeStatus": "Change Status",
+    "assignee": "Assignee",
+    "unassigned": "Unassigned",
+    "assigneeFilter": "Assignee",
+    "filterAll": "All",
+    "filterMine": "Mine",
+    "filterUnassigned": "Unassigned",
+    "searchPlaceholder": "Search by title, company, or email...",
+    "noMatchingTickets": "No tickets match your search or filter criteria.",
     "internalNote": "Internal note (not visible to customer)",
     "addNote": "Add Note",
     "openTicket": "Open full ticket",

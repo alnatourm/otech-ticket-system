@@ -10,7 +10,11 @@
     "priority": "الأولوية",
     "category": "التصنيف",
     "created": "تاريخ الإنشاء",
-    "updated": "آخر تحديث"
+    "updated": "آخر تحديث",
+    "previous": "السابق",
+    "next": "التالي",
+    "pageOf": "صفحة {current} من {total}",
+    "all": "الكل"
   },
   "nav": {
     "home": "الرئيسية",
@@ -58,7 +62,7 @@
     "workspace": "مساحة الدعم",
     "welcome": "مرحباً بعودتك",
     "yourWorkspace": "مساحتي",
-    "searchPlaceholder": "ابحث في التذاكر...",
+    "searchPlaceholder": "البحث بالعنوان أو البريد...",
     "subtitle": "إليك آخر ما يخص طلبات الدعم الخاصة بك.",
     "openTickets": "تذاكر مفتوحة",
     "inProgress": "قيد المعالجة",
@@ -121,6 +125,8 @@
     "replyPlaceholder": "اكتب ردك...",
     "sendReply": "إرسال الرد",
     "noTickets": "لا توجد تذاكر بعد.",
+    "noMatchingTickets": "لا توجد تذاكر تطابق معايير البحث أو التصفية.",
+    "allStatus": "الكل",
     "ticketId": "رقم التذكرة"
   },
   "agent": {
@@ -129,6 +135,14 @@
     "allTickets": "جميع التذاكر",
     "assignToMe": "تعيين لي",
     "changeStatus": "تغيير الحالة",
+    "assignee": "المعيّن له",
+    "unassigned": "غير معيّن",
+    "assigneeFilter": "المعيّن له",
+    "filterAll": "الكل",
+    "filterMine": "تذاكري",
+    "filterUnassigned": "غير معيّن",
+    "searchPlaceholder": "البحث بالعنوان أو الشركة أو البريد...",
+    "noMatchingTickets": "لا توجد تذاكر تطابق معايير البحث أو التصفية.",
     "internalNote": "ملاحظة داخلية (غير مرئية للعميل)",
     "addNote": "إضافة ملاحظة",
     "openTicket": "فتح التذكرة كاملة",

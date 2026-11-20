@@ -1,26 +1,35 @@
 import { requireAgent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import AgentDashboard from "./AgentDashboard";
+import AgentDashboard, { type AgentTicket, type Assignee } from "./AgentDashboard";
 
-export type AgentTicket = {
-  id: string;
-  title: string;
-  email: string;
-  name: string | null;
-  status: string;
-  priority: string;
-  category: string;
-  created_at: string;
-  companies: { name: string } | null;
-};
+export type { AgentTicket, Assignee };
 
 export default async function AgentPage() {
-  await requireAgent();
+  const user = await requireAgent();
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("tickets")
-    .select("id,title,email,name,status,priority,category,created_at,companies(name)")
-    .order("created_at", { ascending: false });
+  const [{ data: ticketsData }, { data: profilesData }] = await Promise.all([
+    supabase
+      .from("tickets")
+      .select("id,title,email,name,status,priority,category,created_at,assigned_to,companies(name)")
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("profiles")
+      .select("id,full_name,role")
+      .in("role", ["agent", "admin"])
+      .order("full_name", { ascending: true }),
+  ]);
 
-  return <AgentDashboard tickets={(data ?? []) as unknown as AgentTicket[]} />;
+  const assignees: Assignee[] = (profilesData ?? []).map((p) => ({
+    id: p.id,
+    fullName: p.full_name,
+    role: p.role,
+  }));
+
+  return (
+    <AgentDashboard
+      tickets={(ticketsData ?? []) as unknown as AgentTicket[]}
+      assignees={assignees}
+      currentUserId={user.id}
+    />
+  );
 }

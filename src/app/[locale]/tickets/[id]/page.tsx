@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import TicketDetail from "./TicketDetail";
+import TicketDetail, { type Assignee } from "./TicketDetail";
 
 export default async function TicketDetailPage({
   params,
@@ -52,6 +52,20 @@ export default async function TicketDetailPage({
     url: signedUrls.find((s) => s.path === a.file_path)?.signedUrl ?? "",
   }));
 
+  let assignees: Assignee[] = [];
+  if (isAgent) {
+    const { data: profilesData } = await supabase
+      .from("profiles")
+      .select("id,full_name,role")
+      .in("role", ["agent", "admin"])
+      .order("full_name", { ascending: true });
+    assignees = (profilesData ?? []).map((p) => ({
+      id: p.id,
+      fullName: p.full_name,
+      role: p.role,
+    }));
+  }
+
   return (
     <TicketDetail
       ticket={ticket}
@@ -62,6 +76,7 @@ export default async function TicketDetailPage({
       userId={user.id}
       companyId={user.companyId}
       isAgent={isAgent}
+      assignees={assignees}
     />
   );
 }
