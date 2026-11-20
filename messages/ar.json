@@ -127,7 +127,9 @@
     "noTickets": "لا توجد تذاكر بعد.",
     "noMatchingTickets": "لا توجد تذاكر تطابق معايير البحث أو التصفية.",
     "allStatus": "الكل",
-    "ticketId": "رقم التذكرة"
+    "ticketId": "رقم التذكرة",
+    "category": "الفئة",
+    "priority": "الأولوية"
   },
   "agent": {
     "title": "لوحة الوكيل",

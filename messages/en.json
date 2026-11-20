@@ -127,7 +127,9 @@
     "noTickets": "No tickets yet.",
     "noMatchingTickets": "No tickets match your search or filter criteria.",
     "allStatus": "All",
-    "ticketId": "Ticket ID"
+    "ticketId": "Ticket ID",
+    "category": "Category",
+    "priority": "Priority"
   },
   "agent": {
     "title": "Agent Dashboard",
