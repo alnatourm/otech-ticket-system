@@ -1,4 +1,4 @@
--- OTECH Ticketing System — Attachment Read Access Fix (DEF-10)
+﻿-- OTECH Ticketing System - Attachment Read Access Fix (DEF-10)
 -- Run this in the Supabase SQL Editor AFTER 004_security_hardening.sql.
 -- Safe to re-run (idempotent).
 --
@@ -21,12 +21,17 @@ create policy "Read ticket images"
       public.is_agent()
       or (
         -- Allow customer to read attachment images (including agent uploads under 'agents/')
-        -- if the attachment is linked to a ticket of the caller's company and is NOT an internal note:
+        -- if the attachment is linked to a ticket of the caller's company, scoped to allowed paths,
+        -- and is NOT an internal note:
         exists (
           select 1
           from public.ticket_attachments a
           join public.tickets t on t.id = a.ticket_id
           where a.file_path = storage.objects.name
+            and (
+              a.file_path like 'agents/%'
+              or a.file_path like (public.my_company_id()::text || '/%')
+            )
             and t.company_id is not null
             and t.company_id = public.my_company_id()
             and (
@@ -35,6 +40,7 @@ create policy "Read ticket images"
                 select 1
                 from public.ticket_replies r
                 where r.id = a.reply_id
+                  and r.ticket_id = a.ticket_id
                   and r.is_internal = false
               )
             )
@@ -75,16 +81,16 @@ VERIFICATION TEST PLAN (Execute in SQL Editor / Supabase Client):
    - As agent, post a PUBLIC reply on Ticket T1 (is_internal = false) and attach an image (file uploaded to 'agents/<filename>.png').
    - Row inserted into public.ticket_attachments with file_path = 'agents/<filename>.png', reply_id = <public_reply_id>, ticket_id = T1.id.
    - As customer@company-a.com (authenticated as customer), query storage.objects or download/createSignedUrl for 'agents/<filename>.png'.
-   - Result: SUCCESS — Image loads and is readable by the customer.
+   - Result: SUCCESS - Image loads and is readable by the customer.
 
 3. Test Internal Agent Note Image (DEF-02 verification):
    - As agent, post an INTERNAL note on Ticket T1 (is_internal = true) and attach an image (file uploaded to 'agents/<filename2>.png').
    - Row inserted into public.ticket_attachments with file_path = 'agents/<filename2>.png', reply_id = <internal_reply_id>, ticket_id = T1.id.
    - As customer@company-a.com, query storage.objects or request signed URL for 'agents/<filename2>.png'.
-   - Result: ACCESS DENIED — 0 rows returned; storage RLS policy blocks access because r.is_internal = true. DEF-02 is verified closed.
+   - Result: ACCESS DENIED - 0 rows returned; storage RLS policy blocks access because r.is_internal = true. DEF-02 is verified closed.
 
 4. Test Cross-Company Isolation:
    - As customer from Company B, attempt to read 'agents/<filename>.png' belonging to Company A's ticket.
-   - Result: ACCESS DENIED — t.company_id does not match public.my_company_id().
+   - Result: ACCESS DENIED - t.company_id does not match public.my_company_id().
 --------------------------------------------------------------------------------
 */
